@@ -1,0 +1,33 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.1"
+services:
+    tests-postgres:
+      image: postgres:11-alpine
+      container_name: tests-pgsql-php73
+      working_dir: /app
+      volumes:
+        - ..:/application
+      environment:
+        - POSTGRES_USER=test
+        - POSTGRES_PASSWORD=1234
+        - POSTGRES_DB=test
+      ports:
+        - 65432:5432
+
+    tests-php:
+      build:
+        context: php-fpm
+        args:
+          TIMEZONE: Europe/Warsaw
+      depends_on:
+        - tests-postgres
+      container_name: tests-php73-pgsql
+      working_dir: /app
+      hostname: tests-php
+      expose:
+       - "9000"
+       - "9001"
+      volumes:
+        - ./php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
